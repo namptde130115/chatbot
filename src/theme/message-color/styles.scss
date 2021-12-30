@@ -1,0 +1,47 @@
+.red {
+  background: #fff;
+  border: 1px solid red;
+  border-radius: 5px;
+  color: red;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: red;
+    color: #fff;
+  }
+}
+
+.blue {
+  background: #fff;
+  border: 1px solid #3da5ce;
+  border-radius: 5px;
+  color: #3da5ce;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: #3da5ce;
+    color: #fff;
+  }
+}
+
+.green {
+  background: #fff;
+  border: 1px solid green;
+  border-radius: 5px;
+  color: green;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background: green;
+    color: #fff;
+  }
+}

@@ -1,0 +1,165 @@
+.message__container {
+  position: relative;
+}
+
+.message {
+  margin-top: 15px;
+  margin-left: 6%;
+  padding-top: 8px;
+  width: 90%;
+  > .message__margin {
+    text-align: left;
+    margin-bottom: 5px;
+    margin-left: 40px;
+  }
+}
+
+.message__header {
+  font-size: 12px;
+  font-style: italic;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  column-gap: 5px;
+}
+
+.message__header div + div:before {
+  padding: 3px;
+  color: black;
+  content: '/\00a0';
+}
+
+.message__header div span:hover {
+  color: #3da5ce;
+  cursor: pointer;
+}
+
+.message__img {
+  position: absolute;
+  width: 50px;
+  top: 10px;
+  left: 10px;
+}
+
+.message__body {
+  background: #fff;
+  border-radius: 6px;
+  color: black;
+  display: flex;
+  padding: 5px;
+  flex-wrap: wrap;
+  position: relative;
+  margin-bottom: 10px !important;
+  margin-right: 40px;
+  width: fit-content;
+}
+
+.gray {
+  background: #dcdcdd;
+}
+
+.questionTitle {
+  word-break: break-word;
+  padding: 5px;
+}
+
+.message__body::after {
+  position: absolute;
+  border-right: 8px solid #fff;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  content: '';
+  left: -8px;
+  top: 1em;
+}
+
+.message__options {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  // > div {
+  //   background: #fff;
+  //   border: 1px solid #3da5ce;
+  //   border-radius: 5px;
+  //   color: #3da5ce;
+  //   margin-right: 10px;
+  //   margin-bottom: 10px;
+  //   padding: 10px 10px;
+  //   cursor: pointer;
+
+  //   &:hover {
+  //     background: #3da5ce;
+  //     color: #fff;
+  //   }
+  // }
+}
+
+.message__options__col {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  > div {
+    background: #fff;
+    border: 1px solid #3da5ce;
+    border-bottom: 0;
+    color: #3da5ce;
+    padding: 10px 10px;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: #3da5ce;
+      color: #fff;
+    }
+  }
+}
+
+.message__options__col div:first-child {
+  margin-bottom: 5px;
+  border-radius: 5px 5px 0 0;
+  border: 1px solid #3da5ce;
+}
+
+.message__options__col div:last-child {
+  margin-top: 5px;
+  border-radius: 0 0 5px 5px;
+  border: 1px solid #3da5ce;
+}
+
+.message__options__col div:nth-last-child(2) {
+  border: 1px solid #3da5ce;
+}
+
+.message__options__col_2 {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  > div {
+    background: #fff;
+    border: 1px solid #3da5ce;
+    border-bottom: 0;
+    color: #3da5ce;
+    padding: 10px 10px;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: #3da5ce;
+      color: #fff;
+    }
+  }
+}
+
+.message__options__col_2 > div:first-child {
+  border-radius: 5px 5px 0 0;
+}
+
+.message__options__col_2 > div:nth-last-child(2) {
+  border-bottom: 1px solid #3da5ce;
+}
+
+.message__options__col_2 > div:last-child {
+  margin-top: 5px;
+  border-radius: 0 0 5px 5px;
+  border-bottom: 1px solid #3da5ce;
+}
