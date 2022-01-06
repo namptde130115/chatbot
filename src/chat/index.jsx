@@ -8,11 +8,15 @@ import { AnswerChat } from '../chat/answer-chat/index';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
-import { question, sendMessage } from '../redux/messageSlice';
+import { getMessage, questionMain, startChat } from '../redux/messageSlice';
+import { IsQA } from './isQA';
+
+// require('dotenv')
 
 export const ChatBot = () => {
-  const listQandA = useSelector((state) => state.message.listQandA);
+  const listMainQandA = useSelector((state) => state.message.listMainQandA);
   const isLoadding = useSelector((state) => state.message.isLoadding);
+  const currentQandA = useSelector((state) => state.message.currentQandA);
   const [form, setForm] = useState({ value: '' });
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
@@ -23,31 +27,150 @@ export const ChatBot = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [listQandA.length]);
+  }, [listMainQandA.length]);
 
   useEffect(() => {
-    dispatch(sendMessage());
-  }, []);
+    dispatch(
+      startChat({
+        categories: '',
+        clientType: 'WIDGET',
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
+  }, [dispatch]);
 
   const [isHidden, setIsHidden] = useState(false);
   const HiddenBody = () => {
     setIsHidden(!isHidden);
   };
 
-  const handleChooseAnswer = async (message) => {
-    // console.log('message from choose answer:', message);
-    await dispatch(question(message));
-    await dispatch(sendMessage());
+  const handleChooseAnswer = async (message, index) => {
+    console.log('message from choose answer:', message, index);
+    await dispatch(questionMain(message));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        content: {
+          inputText: '',
+          options: [message],
+          question: '###SUGGEST###',
+          response: index,
+          questionMessageId: '',
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
   };
 
-  const chooseOption = async (message) => {
-    // console.log('message from choose option:', message);
-    await dispatch(question(message));
-    await dispatch(sendMessage());
+  const chooseOption = async (message, index) => {
+    console.log('message from choose option:', message, index);
+    await dispatch(questionMain(message));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        content: {
+          ...currentQandA.contents[0],
+          response: index,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
   };
 
-  const breadCrumb = async (message) => {
-    console.log('message from breadCrumb:', message);
+  const chooseOpt = async (message, index) => {
+    console.log('choose opt: ', message, index);
+    await dispatch(questionMain(message.value));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        content: {
+          ...currentQandA.contents[0],
+          response: index,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
+  };
+
+  const chooseQA = async (message, index) => {
+    console.log('hanleChooseQA', message, index);
+    await dispatch(questionMain(message));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        content: {
+          ...currentQandA.contents[1],
+          response: index,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
+  };
+
+  const chooseYesNo = async (message, index) => {
+    console.log('chooseYesNo', message, index);
+    await dispatch(questionMain(message));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        contents: {
+          ...currentQandA.contents[1],
+          response: index,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
+  };
+
+  const breadCrumb = async (message, index) => {
+    let totalBreadCrumb =
+      listMainQandA[listMainQandA?.length - 1].breadCrumbs.length;
+    console.log('message from breadCrumb:', message, index);
+    console.log('totalBreadCrumb:', totalBreadCrumb);
+    let messageBack = '';
+    for (let i = 0; i < totalBreadCrumb - 1 - index; i++) {
+      messageBack += '<';
+    }
+
+    console.log('messageBack: ', messageBack);
+
+    await dispatch(questionMain(messageBack));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        content: {
+          text: messageBack,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
   };
 
   const handleChange = (e) => {
@@ -61,9 +184,21 @@ export const ChatBot = () => {
       setForm({ value: '' });
       return;
     }
-    await dispatch(question(form.value));
+    await dispatch(questionMain(form.value));
+    await dispatch(
+      getMessage({
+        chatId: currentQandA?.chatId,
+        clientType: 'WIDGET',
+        contents: {
+          text: form.value,
+        },
+        referrerUrl:
+          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
+        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        uid: '',
+      })
+    );
     setForm({ value: '' });
-    await dispatch(sendMessage());
   };
 
   const handleKeyDown = async (e) => {
@@ -72,8 +207,31 @@ export const ChatBot = () => {
     }
   };
 
-  // console.log('rerender');
-  // console.log('listQandA: ', listQandA);
+  const handleRenderListMainQandA = () => {
+    return (
+      <div className={styles.body}>
+        {listMainQandA.map((element, index) => {
+          return element.type === 'question' ? (
+            <AnswerChat key={index} title={element.title} />
+          ) : element.isQA ? (
+            <IsQA key={index} messageBot={element} />
+          ) : (
+            <Message
+              hanleChooseQA={chooseQA}
+              handleBreadCrumb={breadCrumb}
+              key={index}
+              messageBot={element}
+              handleChooseOptions={chooseOption}
+              handleChooseOpt={chooseOpt}
+              handleYesNo={chooseYesNo}
+              active={element.active}
+            />
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
+    );
+  };
 
   return (
     <div className={clsx({ [styles.posion]: true })}>
@@ -103,22 +261,7 @@ export const ChatBot = () => {
           [styles.isHidden]: isHidden,
         })}
       >
-        <div className={styles.body}>
-          {listQandA.map((element, index) => {
-            return element.type === 'question' ? (
-              <AnswerChat key={index} title={element.title} />
-            ) : (
-              <Message
-                handleBreadCrumb={breadCrumb}
-                key={index}
-                messageBot={element}
-                hanleChooseOptions={chooseOption}
-                active={element.active}
-              />
-            );
-          })}
-          <div ref={messagesEndRef} />
-        </div>
+        {handleRenderListMainQandA()}
         <div className={styles.bottom}>
           <div className={styles.bottom__input__div}>
             <form onSubmit={handleSubmit}>
@@ -135,7 +278,7 @@ export const ChatBot = () => {
           </div>
           <Answer
             chooseAnwer={handleChooseAnswer}
-            listAnswer={listQandA[listQandA.length - 1]?.listAnswer}
+            listAnswer={listMainQandA[listMainQandA.length - 1]?.questions}
           />
         </div>
       </div>

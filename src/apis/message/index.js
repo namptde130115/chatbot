@@ -1,3 +1,5 @@
+import axiosClient from '../axios';
+
 const messageApi = {
   sendMessage: () => {
     return new Promise((resolve) => {
@@ -41,6 +43,14 @@ const messageApi = {
         2000
       );
     });
+  },
+  getMessage: (params) => {
+    const url = '/new%20message';
+    return axiosClient.post(url, params);
+  },
+  startChat: (params) => {
+    const url = '/start%20chat';
+    return axiosClient.post(url, params);
   },
 };
 

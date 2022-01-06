@@ -1,0 +1,22 @@
+.message__isQA {
+  font-size: 0.8em;
+  font-weight: 600;
+  background: #fff;
+  text-align: left;
+  padding: 5px 15px;
+}
+
+.message__isQA__ans {
+  background: #feffea;
+  font-weight: 400;
+  border-top: 1px solid #c9c9ca;
+}
+
+.isQA__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.message__options__isQA {
+  margin-top: 20px;
+}

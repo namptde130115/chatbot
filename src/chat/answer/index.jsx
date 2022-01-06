@@ -7,7 +7,7 @@ export const Answer = ({ listAnswer, chooseAnwer }) => {
       {listAnswer
         ? listAnswer.map((answer, index) => (
             <div
-              onClick={() => chooseAnwer(answer)}
+              onClick={() => chooseAnwer(answer, index)}
               key={index}
               className={styles.bottom__option}
             >

@@ -15,14 +15,8 @@
 }
 
 .blue {
-  background: #fff;
   border: 1px solid #3da5ce;
-  border-radius: 5px;
   color: #3da5ce;
-  margin-right: 10px;
-  margin-bottom: 10px;
-  padding: 10px 10px;
-  cursor: pointer;
 
   &:hover {
     background: #3da5ce;
@@ -32,16 +26,16 @@
 
 .green {
   background: #fff;
-  border: 1px solid green;
+  border: 1px solid #3cb184;
   border-radius: 5px;
-  color: green;
+  color: #3cb184;
   margin-right: 10px;
   margin-bottom: 10px;
   padding: 10px 10px;
   cursor: pointer;
 
   &:hover {
-    background: green;
+    background: #3cb184 !important;
     color: #fff;
   }
 }
