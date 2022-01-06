@@ -12,6 +12,7 @@ import { getMessage, questionMain, startChat } from '../redux/messageSlice';
 import { IsQA } from './isQA';
 
 // require('dotenv')
+// test user.name
 
 export const ChatBot = () => {
   const listMainQandA = useSelector((state) => state.message.listMainQandA);
