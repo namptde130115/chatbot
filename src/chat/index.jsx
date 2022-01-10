@@ -8,11 +8,18 @@ import { AnswerChat } from '../chat/answer-chat/index';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
-import { getMessage, questionMain, startChat } from '../redux/messageSlice';
+import {
+  chooseCategory,
+  chooseOptions,
+  chooseYesNoDispatch,
+  getMessage,
+  questionMain,
+  startChat,
+} from '../redux/messageSlice';
 import { IsQA } from './isQA';
 
 // require('dotenv')
-// test user.name
+// require('dotenv').config();
 
 export const ChatBot = () => {
   const listMainQandA = useSelector((state) => state.message.listMainQandA);
@@ -59,7 +66,7 @@ export const ChatBot = () => {
           inputText: '',
           options: [message],
           question: '###SUGGEST###',
-          response: index,
+          response: 0,
           questionMessageId: '',
         },
         referrerUrl:
@@ -72,13 +79,21 @@ export const ChatBot = () => {
 
   const chooseOption = async (message, index) => {
     console.log('message from choose option:', message, index);
+    console.log('currentQandA: ', currentQandA);
+
     await dispatch(questionMain(message));
+    let contentSend = {
+      ...currentQandA.contents[0],
+      response: index,
+    };
+    delete contentSend.navigateOptions;
+    console.log('contentSend: ', contentSend);
     await dispatch(
-      getMessage({
+      chooseCategory({
         chatId: currentQandA?.chatId,
         clientType: 'WIDGET',
         content: {
-          ...currentQandA.contents[0],
+          ...contentSend,
           response: index,
         },
         referrerUrl:
@@ -93,7 +108,7 @@ export const ChatBot = () => {
     console.log('choose opt: ', message, index);
     await dispatch(questionMain(message.value));
     await dispatch(
-      getMessage({
+      chooseOptions({
         chatId: currentQandA?.chatId,
         clientType: 'WIDGET',
         content: {
@@ -131,11 +146,11 @@ export const ChatBot = () => {
     console.log('chooseYesNo', message, index);
     await dispatch(questionMain(message));
     await dispatch(
-      getMessage({
+      chooseYesNoDispatch({
         chatId: currentQandA?.chatId,
         clientType: 'WIDGET',
-        contents: {
-          ...currentQandA.contents[1],
+        content: {
+          ...currentQandA.contents[0],
           response: index,
         },
         referrerUrl:

@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 // const dotenv = require('dotenv');
 // dotenv.config();
 
@@ -10,6 +9,7 @@ const axiosClient = axios.create({
   headers: {
     'content-type': 'application/json',
   },
+
 });
 
 axiosClient.interceptors.request.use(async (config) => {

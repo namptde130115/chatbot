@@ -7,7 +7,9 @@
     "axios": "^0.24.0",
     "clsx": "^1.1.1",
     "dotenv": "^10.0.0",
+    "https": "^1.0.0",
     "react": "^17.0.2",
+    "react-app-polyfill": "^3.0.0",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "react-scripts": "5.0.0",
@@ -30,12 +32,14 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_mini all"
+      "not op_mini all",
+      "IE 11"
     ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 safari version",
+      "IE 11"
     ]
   }
 }
