@@ -9,6 +9,7 @@ import { AnswerChat } from '../chat/answer-chat/index';
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import {
+  chooseAnswer,
   chooseCategory,
   chooseOptions,
   chooseYesNoDispatch,
@@ -59,7 +60,7 @@ export const ChatBot = () => {
     console.log('message from choose answer:', message, index);
     await dispatch(questionMain(message));
     await dispatch(
-      getMessage({
+      chooseAnswer({
         chatId: currentQandA?.chatId,
         clientType: 'WIDGET',
         content: {
@@ -107,12 +108,14 @@ export const ChatBot = () => {
   const chooseOpt = async (message, index) => {
     console.log('choose opt: ', message, index);
     await dispatch(questionMain(message.value));
+    let sendContent = { ...currentQandA.contents[0] };
+    delete sendContent.navigateOptions;
     await dispatch(
       chooseOptions({
-        chatId: currentQandA?.chatId,
+        chatId: currentQandA.chatId,
         clientType: 'WIDGET',
         content: {
-          ...currentQandA.contents[0],
+          ...sendContent,
           response: index,
         },
         referrerUrl:
@@ -147,7 +150,7 @@ export const ChatBot = () => {
     await dispatch(questionMain(message));
     await dispatch(
       chooseYesNoDispatch({
-        chatId: currentQandA?.chatId,
+        chatId: currentQandA.chatId,
         clientType: 'WIDGET',
         content: {
           ...currentQandA.contents[0],
