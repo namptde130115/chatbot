@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './index.module.scss';
 import clsx from 'clsx';
-import botImg from '../assets/img/bot-header.png';
+import botImg from '../../assets/img/bot-header.png';
 import { Message } from './message/index';
 import { Answer } from './answer/index';
 import { AnswerChat } from '../chat/answer-chat/index';
+import { ChatBotLayout } from '../../layout/chatbot/index';
+import styled from 'styled-components';
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,11 +18,16 @@ import {
   getMessage,
   questionMain,
   startChat,
-} from '../redux/messageSlice';
+} from '../../redux/messageSlice';
 import { IsQA } from './isQA';
 
-// require('dotenv')
-// require('dotenv').config();
+const ChatFrame = styled.div`
+  background: ${(props) => props.theme.chatFrame?.background};
+`;
+
+const Input = styled.div`
+  background: ${(props) => props.theme.input?.background};
+`;
 
 export const ChatBot = () => {
   const listMainQandA = useSelector((state) => state.message.listMainQandA);
@@ -34,6 +41,13 @@ export const ChatBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  let urlSeach = window.location.search.substring(1).split('&');
+
+  const inforUrl = {
+    tenantId: urlSeach[0].split('=')[1] || '63357bbdc04ce1afe94b063dd7670970',
+    categories: urlSeach[1]?.split('=')[1] || '',
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [listMainQandA.length]);
@@ -41,20 +55,14 @@ export const ChatBot = () => {
   useEffect(() => {
     dispatch(
       startChat({
-        categories: '',
+        categories: inforUrl.categories,
         clientType: 'WIDGET',
-        referrerUrl:
-          'https://localhost:8443/draft/63357bbdc04ce1afe94b063dd7670970',
-        tenantId: '63357bbdc04ce1afe94b063dd7670970',
+        referrerUrl: `https://localhost:8443/draft/${inforUrl.tenantId}`,
+        tenantId: inforUrl.tenantId,
         uid: '',
       })
     );
-  }, [dispatch]);
-
-  const [isHidden, setIsHidden] = useState(false);
-  const HiddenBody = () => {
-    setIsHidden(!isHidden);
-  };
+  }, []);
 
   const handleChooseAnswer = async (message, index) => {
     console.log('message from choose answer:', message, index);
@@ -164,7 +172,10 @@ export const ChatBot = () => {
     );
   };
 
-  const breadCrumb = async (message, index) => {
+  const breadCrumb = async (message, index, active) => {
+    if (!active) {
+      return;
+    }
     let totalBreadCrumb =
       listMainQandA[listMainQandA?.length - 1].breadCrumbs.length;
     console.log('message from breadCrumb:', message, index);
@@ -208,7 +219,7 @@ export const ChatBot = () => {
       getMessage({
         chatId: currentQandA?.chatId,
         clientType: 'WIDGET',
-        contents: {
+        content: {
           text: form.value,
         },
         referrerUrl:
@@ -228,10 +239,16 @@ export const ChatBot = () => {
 
   const handleRenderListMainQandA = () => {
     return (
-      <div className={styles.body}>
+      <ChatFrame className={styles.body}>
         {listMainQandA.map((element, index) => {
           return element.type === 'question' ? (
-            <AnswerChat key={index} title={element.title} />
+            <AnswerChat
+              key={index}
+              title={element.title}
+              isCurrent={true}
+              isLoadding={isLoadding}
+              isLast={index === listMainQandA.length - 1}
+            />
           ) : element.isQA ? (
             <IsQA key={index} messageBot={element} />
           ) : (
@@ -248,59 +265,32 @@ export const ChatBot = () => {
           );
         })}
         <div ref={messagesEndRef} />
-      </div>
+      </ChatFrame>
     );
   };
 
   return (
-    <div className={clsx({ [styles.posion]: true })}>
-      <div className={styles.header}>
-        <div className={styles.header__inner}>
-          <img
-            onClick={HiddenBody}
-            className={styles.bot__img}
-            src={botImg}
-            alt='bot-header-img'
-          />
-          <div className={styles.header__text}>
-            <div className={styles.header__message}>
-              <div className={styles.header__message__text}>
-                <span onClick={HiddenBody}>24時間受け付けてます！</span>
-                <div className={styles.header__message__retangle}></div>
-              </div>
-            </div>
-            <span onClick={HiddenBody} className={styles.header__span}>
-              FAQチャット
-            </span>
-          </div>
-        </div>
+    <ChatBotLayout>
+      {handleRenderListMainQandA()}
+      <div className={styles.bottom}>
+        <Input>
+          <form onSubmit={handleSubmit}>
+            <input
+              disabled={isLoadding}
+              onKeyDown={handleKeyDown}
+              onChange={handleChange}
+              value={form.value}
+              placeholder='入力はここに...'
+              type='text'
+              className={styles.bottom__input}
+            />
+          </form>
+        </Input>
+        <Answer
+          chooseAnwer={handleChooseAnswer}
+          listAnswer={listMainQandA[listMainQandA.length - 1]?.questions}
+        />
       </div>
-      <div
-        className={clsx(styles.body__container, {
-          [styles.isHidden]: isHidden,
-        })}
-      >
-        {handleRenderListMainQandA()}
-        <div className={styles.bottom}>
-          <div className={styles.bottom__input__div}>
-            <form onSubmit={handleSubmit}>
-              <input
-                disabled={isLoadding}
-                onKeyDown={handleKeyDown}
-                onChange={handleChange}
-                value={form.value}
-                placeholder='入力はここに...'
-                type='text'
-                className={styles.bottom__input}
-              />
-            </form>
-          </div>
-          <Answer
-            chooseAnwer={handleChooseAnswer}
-            listAnswer={listMainQandA[listMainQandA.length - 1]?.questions}
-          />
-        </div>
-      </div>
-    </div>
+    </ChatBotLayout>
   );
 };

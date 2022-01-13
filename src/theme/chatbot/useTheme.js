@@ -1,27 +1,22 @@
 import { useEffect, useState } from 'react';
-import { setToLS, getFromLS } from '../utils/storage';
-import _ from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTheme } from '../../redux/messageSlice';
 
 export const useTheme = () => {
-  const themes = getFromLS('all-themes');
-  const [theme, setTheme] = useState(themes.data.light);
+  const theme = useSelector((state) => state.message.theme);
   const [themeLoaded, setThemeLoaded] = useState(false);
+  const dispatch = useDispatch();
 
-  const setMode = mode => {
-    setToLS('theme', mode)
-    setTheme(mode);
-  };
+  console.log('theme: ', theme);
 
-  const getFonts = () => {
-    const allFonts = _.values(_.mapValues(themes.data, 'font'));
-    return allFonts;
-  }
+  useEffect(() => {
+    //Get data from api
+    async function getThemeApi() {
+      await dispatch(getTheme());
+      setThemeLoaded(true);
+    }
+    getThemeApi();
+  }, [dispatch]);
 
-  useEffect(() =>{
-    const localTheme = getFromLS('theme');
-    localTheme ? setTheme(localTheme) : setTheme(themes.data.light);
-    setThemeLoaded(true);
-  }, []);
-
-  return { theme, themeLoaded, setMode, getFonts };
+  return { theme, themeLoaded };
 };

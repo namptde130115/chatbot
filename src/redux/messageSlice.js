@@ -7,6 +7,7 @@ const initialState = {
   listMainQandA: [],
   currentQandA: {},
   isLoadding: false,
+  theme: {},
 };
 
 export const sendMessage = createAsyncThunk(
@@ -16,6 +17,11 @@ export const sendMessage = createAsyncThunk(
     return response;
   }
 );
+
+export const getTheme = createAsyncThunk('/theme/getTheme', async (params) => {
+  const response = await messageApi.getTheme(params);
+  return response;
+});
 
 export const startChat = createAsyncThunk('/chat/startChat', async (params) => {
   const response = await messageApi.startChat(params);
@@ -78,15 +84,20 @@ export const messageSlice = createSlice({
     },
     questionMain: (state, { payload }) => {
       console.log({ title: payload, type: 'question' });
-      state.listMainQandA.push({ title: payload, type: 'question' });
+      state.listMainQandA.push({
+        title: payload,
+        type: 'question',
+      });
       if (state.listMainQandA.length > 0) {
         state.listMainQandA = state.listMainQandA.map((qandA) => ({
           ...qandA,
           active: false,
+          // isCurrent: false,
         }));
       }
+
       if (payload.includes('<')) {
-        let total = payload.length + 1;
+        let total = (payload.match(/</g) || []).length + 1;
         for (let i = 0; i < total; i++) {
           state.breadCrumbs.pop();
         }
@@ -95,6 +106,14 @@ export const messageSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getTheme.pending, (state) => {
+        state.isLoadding = true;
+      })
+      .addCase(getTheme.fulfilled, (state, { payload }) => {
+        state.isLoadding = false;
+        console.log('payload: ', payload);
+        state.theme = payload;
+      })
       .addCase(sendMessage.pending, (state) => {
         state.isLoadding = true;
       })
@@ -111,14 +130,24 @@ export const messageSlice = createSlice({
         state.isLoadding = false;
         console.log('payload main: ', payload);
         // let regex = /\d+/g;
-        const questionTitle = payload.contents[0].question.split('\n');
+        const questionTitle =
+          payload.contents[0].question?.split('\n') ||
+          payload.contents[0].text?.split('\n');
         questionTitle.shift();
         console.log('a: ', questionTitle.join());
         // let finalTitle = payload.contents[0].question.join();
-        const total = payload.contents[0].question
-          .split(')')[0]
-          .replace(/[^0-9]/g, '');
-        state.breadCrumbs.push(`すべて (${total})`);
+        const total =
+          payload.contents[0].question?.match(/(?:候補:)([0-9]+)/)[1] ||
+          payload.contents[0].text?.match(/(?:候補:)([0-9]+)/)?.[1];
+
+        if (total) {
+          state.breadCrumbs.push(`すべて (${total})`);
+        } else {
+          state.breadCrumbs.push(`すべて`);
+          state.breadCrumbs = state.breadCrumbs.concat(
+            payload.contents[0].text.split(' ')[0].split('>')
+          );
+        }
         state.listMainQandA.push({
           breadCrumbs: state.breadCrumbs,
           chatId: payload.chatId,
@@ -145,16 +174,6 @@ export const messageSlice = createSlice({
             'questionTitle: ',
             payload.contents[1].question.split('\n')
           );
-
-          // const total = payload.contents[0].question
-          //   .split(')')[0]
-          //   .replace(/[^0-9]/g, '');
-          // let lastBreadCrumb = state.breadCrumbs.pop();
-          // let newLastBreadCrumb = lastBreadCrumb.split(' ')[0];
-          // state.breadCrumbs.push(newLastBreadCrumb);
-          // state.breadCrumbs.push(
-          //   `${nextBreadcumbs.split(' ').shift()} (${total})`
-          // );
 
           let arrOptions = [];
           if (payload.contents[1].optGroup) {
@@ -205,26 +224,32 @@ export const messageSlice = createSlice({
             }
           );
         } else {
-          const questionTitle = payload.contents[0].question.split('\n');
+          const questionTitle =
+            payload.contents[0].question?.split('\n') ||
+            payload.contents[0].text?.split('\n');
           const nextBreadcumbs = questionTitle.shift();
-          console.log('a: ', questionTitle.join());
+          console.log('a: ', nextBreadcumbs);
 
-          const total = payload.contents[0].question
-            .split(')')[0]
-            .replace(/[^0-9]/g, '');
+          let total =
+            payload.contents[0].question?.match(/(?:候補:)([0-9]+)/)[1] ||
+            payload.contents[0].text?.match(/(?:候補:)([0-9]+)/)?.[1];
+
           if (state.breadCrumbs.length === 0) {
             state.breadCrumbs = [`すべて (${total})`];
           } else {
-            let lastBreadCrumb = state.breadCrumbs.pop();
-            let newLastBreadCrumb = lastBreadCrumb?.split(' ')[0] || [];
-            state.breadCrumbs.push(newLastBreadCrumb);
-            state.breadCrumbs.push(
-              `${nextBreadcumbs
-                .split(' ')
-                .shift()
-                .split('>')
-                .slice(-1)} (${total})`
-            );
+            let newLastBreadCrumb =
+              nextBreadcumbs?.split(' ')[0].split('>') || [];
+            for (let i = 0; i < newLastBreadCrumb.length; i++) {
+              state.breadCrumbs.pop();
+            }
+
+            state.breadCrumbs = state.breadCrumbs.concat(newLastBreadCrumb);
+            console.log(newLastBreadCrumb);
+            // state.breadCrumbs.push(
+            //   `${nextBreadcumbs.split(' ').shift().split('>').slice(-1)} ${
+            //     total ? `(${total})` : ''
+            //   }`
+            // );
           }
 
           let arrOptions = [];
@@ -466,8 +491,17 @@ export const messageSlice = createSlice({
             arrOptions = [];
           }
 
+          const total = payload.contents[0].question
+            .split(')')[0]
+            .replace(/[^0-9]/g, '');
+
+          //checkBreacurm
+          if (state.breadCrumbs.length === 0) {
+            state.breadCrumbs.push(`すべて (${total})`);
+          }
+
           state.listMainQandA.push({
-            breadCrumbs: payload.contents[1].button_confirm
+            breadCrumbs: payload.contents[0].button_confirm
               ? ['']
               : state.breadCrumbs,
             optGroup: payload.contents[0].optGroup ? true : false,
@@ -482,7 +516,7 @@ export const messageSlice = createSlice({
             stateButtons: payload.contents[0].stateButtons,
             type: 'answer',
             active: true,
-            ...payload.contents[1],
+            ...payload.contents[0],
           });
           console.log('payload from choose option: ', payload);
           state.currentQandA = {

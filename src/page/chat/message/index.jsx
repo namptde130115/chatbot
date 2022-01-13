@@ -1,10 +1,25 @@
 import React from 'react';
 import styles from './index.module.scss';
-import Bot04Img from '../../assets/img/bot-04.png';
+import Bot04Img from '../../../assets/img/bot-04.png';
 import clsx from 'clsx';
 
-import '../../theme/message-color/styles.scss';
+import '../../../theme/message-color/styles.scss';
+import styled from 'styled-components';
 // import { useSelector } from 'react-redux';
+
+const MainMessage = styled.div`
+  background: ${(props) => props.theme.message?.background};
+  color: ${(props) => props.theme.message?.color};
+  font-size: ${(props) => props.theme.message?.fontSize};
+  &::after {
+    border-right: 8px solid ${(props) => props.theme.message?.background};
+  }
+`;
+
+const Breadcrumbs = styled.div`
+  color: ${(props) => props.theme.message?.color};
+  font-size: ${(props) => props.theme.message?.fontSize};
+`;
 
 export const Message = ({
   messageBot,
@@ -14,13 +29,11 @@ export const Message = ({
   handleBreadCrumb,
   handleChooseOpt,
 }) => {
-  // const breadCrumbs = useSelector((state) => state.message.breadCrumbs);
-
   const handleMessage = () => {
     if (
       active &&
-      !messageBot.optGroup &&
-      messageBot.messageOptionsRow[0] === 'はい'
+      !messageBot?.optGroup &&
+      messageBot?.messageOptionsRow?.includes('はい')
     ) {
       return (
         <div className={clsx(styles.message__options, styles.yesNoOptions)}>
@@ -43,7 +56,7 @@ export const Message = ({
     if (active && !messageBot.optGroup && !messageBot.isGenerated) {
       return (
         <div className={styles.message__options}>
-          {messageBot.messageOptionsRow.map((messageOption, index) => (
+          {messageBot?.messageOptionsRow?.map((messageOption, index) => (
             <div
               onClick={() => handleChooseOptions(messageOption, index)}
               key={index}
@@ -156,17 +169,15 @@ export const Message = ({
     ? messageBot.breadCrumbs[messageBot.breadCrumbs?.length - 1]
     : [];
 
-  // const handleBreadCrumb = (message) => {
-  //   console.log('index of breadcurmbs', message);
-  // };
-
   return (
     <div>
       {handleMessageQA()}
       <div className={styles.message__container}>
         <img className={styles.message__img} src={Bot04Img} alt='bot img' />
         <div className={styles.message}>
-          <div className={clsx(styles.message__margin, styles.message__header)}>
+          <Breadcrumbs
+            className={clsx(styles.message__margin, styles.message__header)}
+          >
             {messageBot.breadCrumbs
               ?.filter(
                 (breadCrumb, index) => index < messageBot.breadCrumbs.length - 1
@@ -174,21 +185,26 @@ export const Message = ({
               ?.map((breadCrumb, index) => (
                 <div key={index}>
                   <span
-                    onClick={() => handleBreadCrumb(breadCrumb, index)}
+                    className={clsx({ [styles.cusor]: active })}
+                    onClick={() => handleBreadCrumb(breadCrumb, index, active)}
                   >{`${breadCrumb}`}</span>
                 </div>
               ))}
             <div
               key={messageBot.breadCrumbs?.length}
             >{`${lastBreadCrumb}`}</div>
-          </div>
-          <div className={clsx(styles.message__margin, styles.message__body)}>
+          </Breadcrumbs>
+          <MainMessage
+            className={clsx(styles.message__margin, styles.message__body)}
+          >
             <div
-              className={clsx(styles.questionTitle, { [styles.gray]: !active })}
+              className={clsx(styles.questionTitle, {
+                [styles.gray]: !active,
+              })}
             >
               {messageBot.questionTitle}
             </div>
-          </div>
+          </MainMessage>
           {handleMessage()}
         </div>
       </div>
