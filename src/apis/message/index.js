@@ -1,15 +1,9 @@
 import axiosClient from '../axios';
-import { theme } from '../mock/theme';
 
 const messageApi = {
   getTheme: () => {
-    return new Promise((resolve) => {
-      setTimeout(
-        () =>
-          resolve(theme),
-        1000
-      );
-    });
+    const url = '/bot-manager/62554f74c5f9ba001d93fc31/tenants/design';
+    return axiosClient.get(url);
   },
   getMessage: (params) => {
     const url = '/new%20message';

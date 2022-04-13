@@ -1,0 +1,19 @@
+.select__container {
+  > div {
+    height: 40px !important;
+    // background-color: var(--color-orange-1) !important;
+    // border-radius: 10px !important;
+    // border: none !important;
+    > span {
+      display: flex;
+      align-items: center;
+    }
+    > span:last-child {
+      color: #000000 !important;
+    }
+  }
+}
+
+.upicon {
+  color: #000000;
+}

@@ -7,8 +7,6 @@ export const useTheme = () => {
   const [themeLoaded, setThemeLoaded] = useState(false);
   const dispatch = useDispatch();
 
-  console.log('theme: ', theme);
-
   useEffect(() => {
     //Get data from api
     async function getThemeApi() {

@@ -1,0 +1,25 @@
+.App {
+  text-align: center;
+  font-family: HelveticaNeue-Light, Helvetica Neue Light, Helvetica Neue,
+    Segoe UI, Roboto, Hiragino Sans, Noto Sans CJK JP, Original Yu Gothic,
+    Yu Gothic, sans-serif;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 4px;
+  &:hover {
+    background: #e4e2e2;
+  }
+}
+::-webkit-scrollbar-track {
+  background-color: none;
+}

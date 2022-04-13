@@ -5,11 +5,10 @@ import axios from 'axios';
 // require('dotenv').config()
 
 const axiosClient = axios.create({
-  baseURL: `https://localhost:8443/api/v1/widget`,
+  baseURL: `http://localhost:8089/api/v1`,
   headers: {
     'content-type': 'application/json',
   },
-
 });
 
 axiosClient.interceptors.request.use(async (config) => {
@@ -30,5 +29,20 @@ axiosClient.interceptors.request.use(async (config) => {
     },
   };
 });
+
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    console.log('ahihi', error.response);
+    if (error.response.status === 401) {
+      console.log('401 roi');
+      // localStorage.clear();
+    } else {
+      throw error;
+    }
+  }
+);
 
 export default axiosClient;

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import './App.css';
+import './App.scss';
+import './App.less';
 import { ThemeProvider } from 'styled-components';
 import { ChatBot } from './page/chat/index';
 import { useTheme } from './theme/chatbot/useTheme';
-import { Routes, Route, Outlet, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 //component
 import { StartPage } from './page/start/index';
@@ -11,8 +12,6 @@ import { StartPage } from './page/start/index';
 function App() {
   const { theme, themeLoaded } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState(theme);
-
-  console.log('selectedTheme', selectedTheme);
 
   useEffect(() => {
     setSelectedTheme(theme);

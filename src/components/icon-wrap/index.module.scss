@@ -1,0 +1,13 @@
+.icon__wrap {
+  width: 1em;
+  height: 1em;
+  font-size: 15px;
+  contain: strict;
+  fill: currentcolor;
+  box-sizing: content-box !important;
+  > svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
